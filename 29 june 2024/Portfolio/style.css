@@ -112,6 +112,7 @@ body {
     position: relative;
     font-size: 16px;
     margin: 20px 0 40px;
+    justify-content:space-around;
 }
 
 .Home-content p::before {
@@ -149,10 +150,11 @@ body {
 
 .images{
     width: 40%;
-    height: 75%;
+    height: 55%;
     position: absolute;
-    bottom: 0;
-    right: 100px;
+    bottom: 20%;
+    right: 45px;
+    align-items: center;
 }
 
 .images img{
@@ -282,10 +284,124 @@ body {
     width: 100%;
 } 
 
+/* Existing CSS remains the same */
+
+/* Add these responsive styles at the end of the file */
+
+@media screen and (max-width: 1024px) {
+    .Home-content {
+        max-width: 50%;
+    }
+
+    .images {
+        width: 45%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .header {
+        padding: 20px 5%;
+    }
+
+    .logo {
+        font-size: 30px;
+    }
+
+    .navbar a {
+        font-size: 16px;
+        margin-left: 20px;
+    }
+
+    .Home {
+        flex-direction: column;
+        padding: 100px 5% 0;
+    }
+
+    .Home-content {
+        max-width: 100%;
+        margin-bottom: 50px;
+    }
+
+    .Home-content h1 {
+        font-size: 40px;
+    }
+
+    .Home-content h3 {
+        font-size: 28px;
+        justify-content:last baseline;
+    }
+
+    .btn-box {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .Home-sci {
+        width: 160px;
+        left: 15%;
+        transform: translateX(-50%);
+    }
+
+    .images {
+        position: relative;
+        width: 90%;
+        height: 400px;
+        right: auto;
+        margin-top: 120px;
+    }
+
+    .images img {
+        left: 50%;
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .header {
+        padding: 15px 5%;
+    }
+
+    .logo {
+        font-size: 25px;
+    }
+
+    .navbar a {
+        font-size: 14px;
+        margin-left: 15px;
+    }
+
+    .Home-content h1 {
+        font-size: 32px;
+    }
+
+    .Home-content h3 {
+        font-size: 24px;
+    }
+
+    .btn-box a {
+        width: 169px;
+        font-size: 16px;
+    }
+
+    .Home-sci {
+        width: 140px;
+        bottom: -50px;
+        left: 90px;
+    }
+
+    .Home-sci a {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+}
 /* KEYFRAMES ANIMATION */
 
 @keyframes showright {
-    100% {
+    100% 
+    {
         width: 0;
     }
 }
