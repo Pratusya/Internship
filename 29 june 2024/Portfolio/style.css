@@ -458,17 +458,8 @@ body {
         font-size: 18px;
     }
 
-    .images {
-        width: 80%;
-        height: auto;
-        position: relative;
-        right: auto;
-        bottom: auto;
-        margin-top: 50px;
-    }
-    
     .images img {
-        max-height: 700vh;
+        max-height: 70vh;
         top: -50px;
     }
 }
