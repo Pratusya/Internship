@@ -470,7 +470,6 @@ p {
     padding: 100px;
     background-color: #EFF7FF;
     border-radius: 10px;
-    margin-bottom: 10%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
   
@@ -481,7 +480,7 @@ p {
     font-size: 45px;
     margin-left: 40%;
     margin-top: 2%;
-    margin-bottom: -22%;
+    margin-bottom: 10%;
   }
   
   input[type="text"],
@@ -514,9 +513,9 @@ p {
     margin-left: 40%;
   }
 
-  footer {
-    background-color: #fff;
-    color: #333333;
+.footer {
+    background-color: #333333;
+    color: #fff;
     width: 100%;
     padding: 25px 20px;
     display: flex;
