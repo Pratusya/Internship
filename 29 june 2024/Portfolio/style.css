@@ -834,14 +834,14 @@ body {
     .Home-sci {
         width: 140px;
         left: 50%;
-        bottom: 8%;
+        bottom: 5%;
     }
     .Home-sci a {
         width: 35px;
         height: 35px;
         font-size: 18px;
     }
-    
+
     .about-content h3 {
         font-size: 1.8rem;
     }
