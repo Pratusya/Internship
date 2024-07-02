@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industry Leading Solutions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="logo.png" alt="Logo">
+            </div>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Our Services</a></li>
+                <li><a href="#">Service Map</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+            <button class="sign-in">Sign in</button>
+        </nav>
+    </header>
+    <main>
+        <div class="content">
+            <h1>Providing Industry Leading Solutions for</h1>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Habitant cras morbi hendrerit nunc vel sapien. In habitasse at diam suspendisse non vitae fermentum, pharetra arcu. Viverra a morbi ut donec in. Ac diam, at sed cras nisi.</p>
+            <button class="learn-more">Learn More →</button>
+        </div>
+        <div class="image">
+            <img src="presentation.png" alt="Presentation">
+        </div>
+    </main>
+</body>
+</html>
