@@ -368,6 +368,9 @@ footer {
         margin-bottom: 30px;
     }
 
+    .about-company{
+        border-radius: 40vh 40vh 0 0;
+    }
     .about-container {
         flex-direction: column;
     }
