@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comapany Website</title>
     <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+     <!-- <script src="script.js"></script> -->
+    <script type="text/javascript">
+        (function() {
+            emailjs.init({
+                publicKey: "dXqa-EF-5yICCErBo",
+            });
+        })();
+    </script>
 </head>
 <body>
     <header>
@@ -126,12 +138,12 @@
 
               <section class="contact-us" id="contact">
                 <h2>Contact Us</h2>
-                <form>
-                    <input class="input" type="text" placeholder="Full Name" required>
-                    <input class="input" type="email" placeholder="Email Address" required>
-                    <input class="input" type="tel" placeholder="Phone Number">
-                    <textarea class="input" placeholder="Have anything to say?"></textarea>
-                    <button type="submit" class="btn , input">Send</button>
+                <form id="contactForm" onsubmit="return SendMail(event)">
+                    <input class="input" type="text" id="fullName" placeholder="Full Name" required>
+                    <input class="input" type="email" id="email_id" placeholder="Email Address" required>
+                    <input class="input" type="tel" id="phone_number" placeholder="Phone Number">
+                    <textarea class="input" id="message" placeholder="Have anything to say?"></textarea>
+                    <button type="button" onclick="SendMail(event)" class="btn input">Send</button>
                 </form>
                 <div class="bubble bubble-1"></div>
                 <div class="bubble bubble-2"></div>
@@ -143,5 +155,6 @@
                   <span class="copyright">Company © 2022 All Rights Reserved</span>
                 </div>
               </footer>
+             
 </body>
 </html>
