@@ -23,13 +23,17 @@ const paragraphs = [
 const typingText = document.querySelector(".typing-text p")
 const inpField = document.querySelector(".wrapper .input-field")
 const tryAgainBtn = document.querySelector(".content button")
+const backspaceToggle = document.getElementById("backspace-toggle");
 const timeTag = document.querySelector(".time span b")
+const timeSelect = document.getElementById("time-select")
 const mistakeTag = document.querySelector(".mistake span")
 const wpmTag = document.querySelector(".wpm span")
 const cpmTag = document.querySelector(".cpm span")
+const historyList = document.getElementById("history-list");
 
 let timer;
-let maxTime = 60;
+let allowBackspace = true;
+let maxTime = parseInt(timeSelect.value);
 let timeLeft = maxTime;
 let charIndex = mistakes = isTyping = 0;
 
@@ -37,7 +41,6 @@ function loadParagraph() {
     const ranIndex = Math.floor(Math.random() * paragraphs.length);
     typingText.innerHTML = "";
     paragraphs[ranIndex].split("").forEach(char => {
-        console.log(char);
         let span = `<span>${char}</span>`
         typingText.innerHTML += span;
     });
@@ -53,9 +56,11 @@ function initTyping() {
         if (!isTyping) {
             timer = setInterval(initTimer, 1000);
             isTyping = true;
+            timeSelect.disabled = true;
+            backspaceToggle.disabled = true; // Disable backspace toggle when typing starts
         }
         if (typedChar == null) {
-            if (charIndex > 0) {
+            if (charIndex > 0 && allowBackspace) {
                 charIndex--;
                 if (characters[charIndex].classList.contains("incorrect")) {
                     mistakes--;
@@ -69,7 +74,6 @@ function initTyping() {
             } else {
                 mistakes++;
                 characters[charIndex].classList.add("incorrect");
-                // Add missing-space class to the space character if typed incorrectly
                 if (characters[charIndex].innerText === ' ') {
                     characters[charIndex].classList.add("missing-space");
                 }
@@ -85,9 +89,10 @@ function initTyping() {
         wpmTag.innerText = wpm;
         mistakeTag.innerText = mistakes;
         cpmTag.innerText = charIndex - mistakes;
-    } else {
+    }  else {
         clearInterval(timer);
         inpField.value = "";
+        addHistoryEntry(); // Add this line to call addHistoryEntry when typing is complete
     }
 }
 
@@ -99,12 +104,14 @@ function initTimer() {
         wpmTag.innerText = wpm;
     } else {
         clearInterval(timer);
+        // Remove the addHistoryEntry() call from here
     }
 }
 
 function resetGame() {
     loadParagraph();
     clearInterval(timer);
+    maxTime = parseInt(timeSelect.value);
     timeLeft = maxTime;
     charIndex = mistakes = isTyping = 0;
     inpField.value = "";
@@ -112,11 +119,53 @@ function resetGame() {
     wpmTag.innerText = 0;
     mistakeTag.innerText = 0;
     cpmTag.innerText = 0;
+    backspaceToggle.disabled = false; // Enable backspace toggle when game is reset
+    allowBackspace = backspaceToggle.checked;
+    historyList.innerHTML = "";
+    timeSelect.disabled = false; // Enable time selector when game is reset
     typingText.querySelectorAll("span").forEach(span => {
         span.classList.remove("correct", "incorrect", "active", "missing-space");
+    });
+    backspaceToggle.addEventListener("change", function() {
+        allowBackspace = this.checked;
+    });
+    // Prevent backspace key from navigating back
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Backspace" && !allowBackspace) {
+            e.preventDefault();
+        }
     });
 }
 
 loadParagraph();
 inpField.addEventListener("input", initTyping);
 tryAgainBtn.addEventListener("click", resetGame);
+
+// Add event listener for time selection change
+timeSelect.addEventListener("change", function() {
+    maxTime = parseInt(this.value);
+    timeLeft = maxTime;
+    timeTag.innerText = timeLeft;
+});
+
+function addHistoryEntry() {
+    const wpm = parseInt(wpmTag.innerText);
+    const cpm = parseInt(cpmTag.innerText);
+    const mistakesCount = parseInt(mistakeTag.innerText);
+    const timeUsed = maxTime; // Use maxTime instead of (maxTime - timeLeft)
+
+    const historyEntry = document.createElement("li");
+    historyEntry.innerHTML = `
+        Time: ${timeUsed}s | 
+        Mistakes: ${mistakesCount} | 
+        WPM: ${wpm} | 
+        CPM: ${cpm}
+    `;
+
+    historyList.prepend(historyEntry);
+
+    // Limit history to last 5 entries
+    if (historyList.children.length > 5) {
+        historyList.removeChild(historyList.lastChild);
+    }
+}
