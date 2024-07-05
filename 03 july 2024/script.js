@@ -69,6 +69,18 @@ let backspaceData = [];
 let errorData = [];
 let timeData = [];
 
+function disableControls() {
+    timeSelect.disabled = true;
+    difficultySelect.disabled = true;
+    backspaceToggle.disabled = true;
+}
+
+function enableControls() {
+    timeSelect.disabled = false;
+    difficultySelect.disabled = false;
+    backspaceToggle.disabled = false;
+}
+
 function getRandomParagraph() {
     const difficulty = difficultySelect.value;
     let selectedParagraphs;
@@ -93,7 +105,27 @@ function initTest() {
     isTestActive = false;
     hasStartedTyping = false;
     currentText = getRandomParagraph();
-    textDisplay.innerHTML = currentText.split('').map(char => `<span>${char}</span>`).join('');
+    
+    const textContent = document.createElement('div');
+    textContent.className = 'text-content';
+    textContent.innerHTML = currentText.split('').map(char => `<span>${char}</span>`).join('');
+    
+    const cursor = document.createElement('div');
+    cursor.className = 'cursor';
+
+    textDisplay.innerHTML = '';
+    textDisplay.appendChild(textContent);
+    textDisplay.appendChild(cursor);
+
+    // Position the cursor at the start of the text
+    const firstChar = textContent.querySelector('span');
+    if (firstChar) {
+        const rect = firstChar.getBoundingClientRect();
+        const containerRect = textDisplay.getBoundingClientRect();
+        cursor.style.top = `${rect.top - containerRect.top}px`;
+        cursor.style.left = `${rect.left - containerRect.left}px`;
+    }
+
     timeRemaining = parseInt(timeSelect.value);
     timeLeft.textContent = timeRemaining;
     typedCharacters = 0;
@@ -116,8 +148,12 @@ function initTest() {
     
     textDisplay.removeEventListener('keydown', handleKeyDown);
     textDisplay.addEventListener('keydown', handleKeyDown);
-}
 
+    // Highlight the first character
+    textContent.querySelector('span').classList.add('active');
+
+    enableControls();
+}
 function startTimer() {
     startTime = new Date();
     timer = setInterval(() => {
@@ -135,6 +171,7 @@ function calculateAccuracy() {
     if (!hasStartedTyping) return 100;
     return typedCharacters > 0 ? Math.round(((typedCharacters - errors) / typedCharacters) * 100) : 100;
 }
+;
 
 function updateStats() {
     const timeElapsed = Math.max((new Date() - startTime) / 1000 / 60, 0.001);
@@ -148,13 +185,12 @@ function updateStats() {
     document.getElementById('backspace-count').textContent = backspaceCount;
     document.getElementById('accuracy').textContent = accuracy;
 
-    // Collect data for the chart
     wpmData.push(wpm);
     cpmData.push(cpm);
     accuracyData.push(accuracy);
     backspaceData.push(backspaceCount);
     errorData.push(errors);
-    timeData.push(Math.round(timeElapsed * 60)); // Convert to seconds
+    timeData.push(Math.round(timeElapsed * 60));
 }
 
 function showResultPopup(wpm, cpm, errors, backspaces, accuracy) {
@@ -254,6 +290,7 @@ function endTest() {
     addToHistory(finalWpm, finalCpm, accuracy, errors, backspaceCount);
     showResultPopup(finalWpm, finalCpm, errors, backspaceCount, accuracy);
     textDisplay.removeEventListener('keydown', handleKeyDown);
+    enableControls();
 }
 
 function handleKeyDown(e) {
@@ -261,33 +298,46 @@ function handleKeyDown(e) {
         isTestActive = true;
         startTime = new Date();
         startTimer();
+        disableControls();
     }
 
     if (isTestActive && timeRemaining > 0) {
         const key = e.key;
         const currentChar = currentText[currentIndex];
+        const spans = textDisplay.querySelectorAll('.text-content span');
+
+        spans[currentIndex].classList.remove('active');
 
         if (key === currentChar || (key.length === 1 && key !== currentChar)) {
             hasStartedTyping = true;
         }
 
         if (key === currentChar) {
-            textDisplay.children[currentIndex].classList.add('correct');
+            spans[currentIndex].classList.add('correct');
             currentIndex++;
             typedCharacters++;
         } else if (key === 'Backspace' && backspaceToggle.checked && currentIndex > 0) {
             currentIndex--;
-            textDisplay.children[currentIndex].classList.remove('correct', 'incorrect');
-            if (textDisplay.children[currentIndex].classList.contains('incorrect')) {
+            spans[currentIndex].classList.remove('correct', 'incorrect');
+            if (spans[currentIndex].classList.contains('incorrect')) {
                 errors--;
             }
             typedCharacters--;
             backspaceCount++;
         } else if (key.length === 1) {
-            textDisplay.children[currentIndex].classList.add('incorrect');
+            spans[currentIndex].classList.add('incorrect');
             errors++;
             currentIndex++;
             typedCharacters++;
+        }
+
+        if (currentIndex < currentText.length) {
+            spans[currentIndex].classList.add('active');
+            const rect = spans[currentIndex].getBoundingClientRect();
+            const cursorTop = rect.top - textDisplay.getBoundingClientRect().top;
+            const cursorLeft = rect.left - textDisplay.getBoundingClientRect().left;
+            textDisplay.querySelector('.cursor').style.top = `${cursorTop}px`;
+            textDisplay.querySelector('.cursor').style.left = `${cursorLeft}px`;
         }
 
         if (currentIndex === currentText.length) {

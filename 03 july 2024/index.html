@@ -12,10 +12,7 @@
     <div class="container">
         <main class="typing-area">
             <header>
-                <div class="logo-container">
-                    <img src="logo.png" alt="Company Logo">
-                    <h1>Speed Typing Test</h1>
-                </div>
+                <h1>Speed Typing Test</h1>
                 <div class="test-config">
                     <div class="config-item">
                         <label for="time-select">Duration:</label>
@@ -43,7 +40,10 @@
                     </div>
                 </div>
             </header>
-            <div id="text-display" class="text-display" tabindex="0"></div>
+            <div id="text-display" class="text-display" tabindex="0">
+                <div class="text-content"></div>
+                <div class="cursor"></div>
+            </div>
             <button id="reset-btn" class="reset-btn">Reset Test</button>
         </main>
         <aside class="sidebar">
