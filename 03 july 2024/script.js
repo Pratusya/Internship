@@ -20,152 +20,287 @@ const paragraphs = [
     "Those cowbells are nothing more than elements. This could be, or perhaps before stockings, thoughts were only opinions. A coil of the exclamation is assumed to be a hurtless toy. A board is the cast of a religion. In ancient times the first stinko sailboat is, in its own way, an exchange. Few can name a tutti channel that isn't a footless operation. Extending this logic, an oatmeal is the rooster of a shake. Those step-sons are nothing more than matches.",
 ];
 
-const typingText = document.querySelector(".typing-text p")
-const inpField = document.querySelector(".wrapper .input-field")
-const tryAgainBtn = document.querySelector(".content button")
-const backspaceToggle = document.getElementById("backspace-toggle");
-const timeTag = document.querySelector(".time span b")
-const timeSelect = document.getElementById("time-select")
-const mistakeTag = document.querySelector(".mistake span")
-const wpmTag = document.querySelector(".wpm span")
-const cpmTag = document.querySelector(".cpm span")
-const historyList = document.getElementById("history-list");
+const easyParagraphs = [
+    "The cat sat on the mat. It was a sunny day. Birds chirped in the trees. A gentle breeze blew through the leaves. The sky was clear and blue.",
+    "I like to read books. They take me to new worlds. I learn many things from reading. It is a fun hobby. I read every day.",
+    "Cooking is an art. It requires patience and skill. Good food makes people happy. I enjoy trying new recipes. Eating together is important.",
+    "Exercise is good for health. It makes the body strong. Running is a great workout. Swimming is also very beneficial. Stay active and fit.",
+    "Music brings joy to life. It has the power to change moods. Dancing to music is fun. Singing along is enjoyable. Music connects people.",
+];
+
+const hardParagraphs = [
+    "The intricate interplay between quantum mechanics and general relativity presents a formidable challenge in contemporary physics, particularly in reconciling these theories at the Planck scale, where our current understanding of spacetime breaks down.",
+    "The emergence of artificial general intelligence poses complex ethical dilemmas and existential risks that require careful consideration of machine consciousness, value alignment, and the potential for an intelligence explosion that could rapidly surpass human cognitive capabilities.",
+    "The epigenetic regulation of gene expression through DNA methylation and histone modification plays a crucial role in cellular differentiation and organismal development, with far-reaching implications for our understanding of heredity and evolution.",
+    "The intricate dynamics of global economic systems, influenced by factors such as technological disruption, geopolitical tensions, and climate change, necessitate a multidisciplinary approach to policymaking that accounts for complex feedback loops and emergent phenomena.",
+    "The philosophical implications of the many-worlds interpretation of quantum mechanics challenge our fundamental notions of reality, causality, and the nature of consciousness, raising profound questions about the structure of the multiverse and our place within it.",
+];
+
+const textDisplay = document.getElementById('text-display');
+const timeLeft = document.getElementById('time-left');
+const wpmDisplay = document.getElementById('wpm');
+const cpmDisplay = document.getElementById('cpm');
+const errorsDisplay = document.getElementById('errors');
+const resetBtn = document.getElementById('reset-btn');
+const historyList = document.getElementById('history-list');
+const timeSelect = document.getElementById('time-select');
+const backspaceToggle = document.getElementById('backspace-toggle');
+const difficultySelect = document.getElementById('difficulty-select');
+
+const modal = document.createElement('div');
+modal.className = 'modal';
+document.body.appendChild(modal);
 
 let timer;
-let allowBackspace = true;
-let maxTime = parseInt(timeSelect.value);
-let timeLeft = maxTime;
-let charIndex = mistakes = isTyping = 0;
+let timeRemaining;
+let currentText = '';
+let typedCharacters = 0;
+let errors = 0;
+let startTime;
+let currentIndex = 0;
+let isTestActive = false;
+let backspaceCount = 0;
+let hasStartedTyping = false;
 
-function loadParagraph() {
-    const ranIndex = Math.floor(Math.random() * paragraphs.length);
-    typingText.innerHTML = "";
-    paragraphs[ranIndex].split("").forEach(char => {
-        let span = `<span>${char}</span>`
-        typingText.innerHTML += span;
-    });
-    typingText.querySelectorAll("span")[0].classList.add("active");
-    document.addEventListener("keydown", () => inpField.focus());
-    typingText.addEventListener("click", () => inpField.focus());
-}
+let wpmData = [];
+let cpmData = [];
+let accuracyData = [];
+let backspaceData = [];
+let errorData = [];
+let timeData = [];
 
-function initTyping() {
-    let characters = typingText.querySelectorAll("span");
-    let typedChar = inpField.value.split("")[charIndex];
-    if (charIndex < characters.length - 1 && timeLeft > 0) {
-        if (!isTyping) {
-            timer = setInterval(initTimer, 1000);
-            isTyping = true;
-            timeSelect.disabled = true;
-            backspaceToggle.disabled = true; // Disable backspace toggle when typing starts
-        }
-        if (typedChar == null) {
-            if (charIndex > 0 && allowBackspace) {
-                charIndex--;
-                if (characters[charIndex].classList.contains("incorrect")) {
-                    mistakes--;
-                }
-                characters[charIndex].classList.remove("correct", "incorrect", "missing-space");
-            }
-        } else {
-            if (characters[charIndex].innerText == typedChar) {
-                characters[charIndex].classList.add("correct");
-                characters[charIndex].classList.remove("missing-space");
-            } else {
-                mistakes++;
-                characters[charIndex].classList.add("incorrect");
-                if (characters[charIndex].innerText === ' ') {
-                    characters[charIndex].classList.add("missing-space");
-                }
-            }
-            charIndex++;
-        }
-        characters.forEach(span => span.classList.remove("active"));
-        characters[charIndex].classList.add("active");
+function getRandomParagraph() {
+    const difficulty = difficultySelect.value;
+    let selectedParagraphs;
 
-        let wpm = Math.round(((charIndex - mistakes) / 5) / (maxTime - timeLeft) * 60);
-        wpm = wpm < 0 || !wpm || wpm === Infinity ? 0 : wpm;
-
-        wpmTag.innerText = wpm;
-        mistakeTag.innerText = mistakes;
-        cpmTag.innerText = charIndex - mistakes;
-    }  else {
-        clearInterval(timer);
-        inpField.value = "";
-        addHistoryEntry(); // Add this line to call addHistoryEntry when typing is complete
+    switch (difficulty) {
+        case 'easy':
+            selectedParagraphs = easyParagraphs;
+            break;
+        case 'hard':
+            selectedParagraphs = hardParagraphs;
+            break;
+        default:
+            selectedParagraphs = paragraphs;
     }
+
+    const randomIndex = Math.floor(Math.random() * selectedParagraphs.length);
+    return selectedParagraphs[randomIndex];
 }
 
-function initTimer() {
-    if (timeLeft > 0) {
-        timeLeft--;
-        timeTag.innerText = timeLeft;
-        let wpm = Math.round(((charIndex - mistakes) / 5) / (maxTime - timeLeft) * 60);
-        wpmTag.innerText = wpm;
-    } else {
-        clearInterval(timer);
-        // Remove the addHistoryEntry() call from here
-    }
-}
-
-function resetGame() {
-    loadParagraph();
+function initTest() {
     clearInterval(timer);
-    maxTime = parseInt(timeSelect.value);
-    timeLeft = maxTime;
-    charIndex = mistakes = isTyping = 0;
-    inpField.value = "";
-    timeTag.innerText = timeLeft;
-    wpmTag.innerText = 0;
-    mistakeTag.innerText = 0;
-    cpmTag.innerText = 0;
-    backspaceToggle.disabled = false; // Enable backspace toggle when game is reset
-    allowBackspace = backspaceToggle.checked;
-    historyList.innerHTML = "";
-    timeSelect.disabled = false; // Enable time selector when game is reset
-    typingText.querySelectorAll("span").forEach(span => {
-        span.classList.remove("correct", "incorrect", "active", "missing-space");
+    isTestActive = false;
+    hasStartedTyping = false;
+    currentText = getRandomParagraph();
+    textDisplay.innerHTML = currentText.split('').map(char => `<span>${char}</span>`).join('');
+    timeRemaining = parseInt(timeSelect.value);
+    timeLeft.textContent = timeRemaining;
+    typedCharacters = 0;
+    errors = 0;
+    currentIndex = 0;
+    backspaceCount = 0;
+    wpmDisplay.textContent = '0';
+    cpmDisplay.textContent = '0';
+    errorsDisplay.textContent = '0';
+    document.getElementById('backspace-count').textContent = '0';
+    document.getElementById('accuracy').textContent = '100';
+    textDisplay.focus();
+    
+    wpmData = [];
+    cpmData = [];
+    accuracyData = [];
+    backspaceData = [];
+    errorData = [];
+    timeData = [];
+    
+    textDisplay.removeEventListener('keydown', handleKeyDown);
+    textDisplay.addEventListener('keydown', handleKeyDown);
+}
+
+function startTimer() {
+    startTime = new Date();
+    timer = setInterval(() => {
+        if (timeRemaining > 0) {
+            timeRemaining--;
+            timeLeft.textContent = timeRemaining;
+            updateStats();
+        } else {
+            endTest();
+        }
+    }, 1000);
+}
+
+function calculateAccuracy() {
+    if (!hasStartedTyping) return 100;
+    return typedCharacters > 0 ? Math.round(((typedCharacters - errors) / typedCharacters) * 100) : 100;
+}
+
+function updateStats() {
+    const timeElapsed = Math.max((new Date() - startTime) / 1000 / 60, 0.001);
+    const wpm = Math.round((typedCharacters / 5) / timeElapsed);
+    const cpm = Math.round(typedCharacters / timeElapsed);
+    const accuracy = calculateAccuracy();
+    
+    wpmDisplay.textContent = wpm > 0 ? wpm : 0;
+    cpmDisplay.textContent = cpm > 0 ? cpm : 0;
+    errorsDisplay.textContent = errors;
+    document.getElementById('backspace-count').textContent = backspaceCount;
+    document.getElementById('accuracy').textContent = accuracy;
+
+    // Collect data for the chart
+    wpmData.push(wpm);
+    cpmData.push(cpm);
+    accuracyData.push(accuracy);
+    backspaceData.push(backspaceCount);
+    errorData.push(errors);
+    timeData.push(Math.round(timeElapsed * 60)); // Convert to seconds
+}
+
+function showResultPopup(wpm, cpm, errors, backspaces, accuracy) {
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>Test Results</h2>
+            <p>Words per minute: ${wpm}</p>
+            <p>Characters per minute: ${cpm}</p>
+            <p>Accuracy: ${accuracy}%</p>
+            <p>Errors: ${errors}</p>
+            <p>Backspaces: ${backspaces}</p>
+            <canvas id="statsChart" width="400" height="200"></canvas>
+            <button id="close-modal">Close</button>
+        </div>
+    `;
+    modal.style.display = 'flex';
+    
+    createChart();
+
+    document.getElementById('close-modal').addEventListener('click', () => {
+        modal.style.display = 'none';
     });
-    backspaceToggle.addEventListener("change", function() {
-        allowBackspace = this.checked;
-    });
-    // Prevent backspace key from navigating back
-    document.addEventListener("keydown", function(e) {
-        if (e.key === "Backspace" && !allowBackspace) {
-            e.preventDefault();
+}
+
+function createChart() {
+    const ctx = document.getElementById('statsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: timeData,
+            datasets: [
+                {
+                    label: 'WPM',
+                    data: wpmData,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                },
+                {
+                    label: 'CPM',
+                    data: cpmData,
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Accuracy',
+                    data: accuracyData,
+                    borderColor: 'rgb(54, 162, 235)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Backspaces',
+                    data: backspaceData,
+                    borderColor: 'rgb(255, 206, 86)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Errors',
+                    data: errorData,
+                    borderColor: 'rgb(153, 102, 255)',
+                    tension: 0.1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Time (seconds)'
+                    }
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
 }
 
-loadParagraph();
-inpField.addEventListener("input", initTyping);
-tryAgainBtn.addEventListener("click", resetGame);
-
-// Add event listener for time selection change
-timeSelect.addEventListener("change", function() {
-    maxTime = parseInt(this.value);
-    timeLeft = maxTime;
-    timeTag.innerText = timeLeft;
-});
-
-function addHistoryEntry() {
-    const wpm = parseInt(wpmTag.innerText);
-    const cpm = parseInt(cpmTag.innerText);
-    const mistakesCount = parseInt(mistakeTag.innerText);
-    const timeUsed = maxTime; // Use maxTime instead of (maxTime - timeLeft)
-
-    const historyEntry = document.createElement("li");
-    historyEntry.innerHTML = `
-        Time: ${timeUsed}s | 
-        Mistakes: ${mistakesCount} | 
-        WPM: ${wpm} | 
-        CPM: ${cpm}
-    `;
-
-    historyList.prepend(historyEntry);
-
-    // Limit history to last 5 entries
+function addToHistory(wpm, cpm, accuracy, errors, backspaces) {
+    const li = document.createElement('li');
+    li.innerHTML = `WPM: ${wpm} | CPM: ${cpm} | Accuracy: ${accuracy}% | Errors: ${errors} | Backspaces: ${backspaces}`;
+    historyList.insertBefore(li, historyList.firstChild);
     if (historyList.children.length > 5) {
         historyList.removeChild(historyList.lastChild);
     }
 }
+
+function endTest() {
+    isTestActive = false;
+    clearInterval(timer);
+    updateStats();
+    const finalWpm = parseInt(wpmDisplay.textContent);
+    const finalCpm = parseInt(cpmDisplay.textContent);
+    const accuracy = calculateAccuracy();
+    addToHistory(finalWpm, finalCpm, accuracy, errors, backspaceCount);
+    showResultPopup(finalWpm, finalCpm, errors, backspaceCount, accuracy);
+    textDisplay.removeEventListener('keydown', handleKeyDown);
+}
+
+function handleKeyDown(e) {
+    if (!isTestActive && timeRemaining > 0) {
+        isTestActive = true;
+        startTime = new Date();
+        startTimer();
+    }
+
+    if (isTestActive && timeRemaining > 0) {
+        const key = e.key;
+        const currentChar = currentText[currentIndex];
+
+        if (key === currentChar || (key.length === 1 && key !== currentChar)) {
+            hasStartedTyping = true;
+        }
+
+        if (key === currentChar) {
+            textDisplay.children[currentIndex].classList.add('correct');
+            currentIndex++;
+            typedCharacters++;
+        } else if (key === 'Backspace' && backspaceToggle.checked && currentIndex > 0) {
+            currentIndex--;
+            textDisplay.children[currentIndex].classList.remove('correct', 'incorrect');
+            if (textDisplay.children[currentIndex].classList.contains('incorrect')) {
+                errors--;
+            }
+            typedCharacters--;
+            backspaceCount++;
+        } else if (key.length === 1) {
+            textDisplay.children[currentIndex].classList.add('incorrect');
+            errors++;
+            currentIndex++;
+            typedCharacters++;
+        }
+
+        if (currentIndex === currentText.length) {
+            endTest();
+        }
+
+        updateStats();
+        e.preventDefault();
+    }
+}
+
+resetBtn.addEventListener('click', initTest);
+timeSelect.addEventListener('change', initTest);
+difficultySelect.addEventListener('change', initTest);
+
+initTest();

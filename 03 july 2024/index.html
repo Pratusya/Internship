@@ -2,59 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speed Typing Game</title>
+    <title>Professional Speed Typing Test</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="wrapper">
-        <input type="text" class="input-field">
-        <div class="content-box">
-            <div class="time-selector">
-                <label for="time-select">Select Time:</label>
-                <select id="time-select">
-                    <option value="30">30s</option>
-                    <option value="60" selected>60s</option>
-                    <option value="120">120s</option>
-                    <option value="300">300s</option>
-                </select>
+    <div class="container">
+        <main class="typing-area">
+            <header>
+                <h1>Speed Typing Test</h1>
+                <div class="test-config">
+                    <div class="config-item">
+                        <label for="time-select">Duration:</label>
+                        <select id="time-select">
+                            <option value="30">30s</option>
+                            <option value="60" selected>60s</option>
+                            <option value="120">120s</option>
+                            <option value="300">300s</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label for="difficulty-select">Difficulty:</label>
+                        <select id="difficulty-select">
+                            <option value="easy">Easy</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label for="backspace-toggle">Backspace:</label>
+                        <label class="switch">
+                            <input type="checkbox" id="backspace-toggle" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </header>
+            <div id="text-display" class="text-display" tabindex="0"></div>
+            <button id="reset-btn" class="reset-btn">Reset Test</button>
+        </main>
+        <aside class="sidebar">
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <span id="time-left">60</span>s
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span id="wpm">0</span> WPM
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-keyboard"></i>
+                    <span id="cpm">0</span> CPM
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-times-circle"></i>
+                    <span id="errors">0</span> Errors
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-backspace"></i>
+                    <span id="backspace-count">0</span> Backspaces
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-bullseye"></i>
+                    <span id="accuracy">100</span>% Accuracy
+                </div>
             </div>
-            <div class="backspace-toggle">
-                <label for="backspace-toggle">Allow Backspace:</label>
-                <input type="checkbox" id="backspace-toggle" checked>
+            <div class="history-panel">
+                <h2>Test History</h2>
+                <ul id="history-list"></ul>
             </div>
-            <div class="typing-text">
-                <p id="paragraph"></p>
-            </div>
-            <div class="content">
-                <ul class="result-details">
-                    <li class="time">
-                        <p>Time Left:</p>
-                        <span><b>60</b>s</span>
-                    </li>
-                    <li class="mistake">
-                        <p>Mistakes:</p>
-                        <span>0</span>
-                    </li>
-                    <li class="wpm">
-                        <p>WPM:</p>
-                        <span>0</span>
-                    </li>
-                    <li class="cpm">
-                        <p>CPM:</p>
-                        <span>0</span>
-                    </li>
-                </ul>
-                <button>Try Again</button>
-            </div>
-        </div>
-        <!-- Add this after the existing content div -->
-        <div class="history-box">
-            <h3>History</h3>
-            <ul id="history-list"></ul>
-        </div>
+        </aside>
     </div>
+    <script src="script.js"></script>
 </body>
 </html>
