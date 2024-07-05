@@ -75,6 +75,7 @@ select, input[type="checkbox"] {
     outline: none;
     position: relative;
     line-height: 1.8;
+    max-height: 50vh;
 }
 
 .text-content {
@@ -91,6 +92,7 @@ select, input[type="checkbox"] {
     position: absolute;
     width: 2px;
     height: 1.5em;
+    max-height: 1.5em;
     background-color: var(--primary-color);
     animation: blink 0.7s infinite;
 }
@@ -236,21 +238,6 @@ select, input[type="checkbox"] {
     height: auto;
 }
 
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        order: -1;
-    }
-
-    .typing-area {
-        height: 60vh;
-    }
-}
-
 /* Slider Toggle */
 .switch {
     position: relative;
@@ -305,4 +292,74 @@ input:checked + .slider:before {
 
 .slider.round:before {
     border-radius: 50%;
+}
+
+/* Responsive styles */
+@media (max-width: 1200px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        order: -1;
+    }
+
+    .typing-area {
+        height: auto;
+        min-height: 60vh;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .typing-area {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+
+    .test-config {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .text-display {
+        font-size: 1rem;
+        padding: 1rem;
+    }
+
+    .reset-btn {
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .sidebar {
+        padding: 1rem;
+    }
+
+    .stats-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-item {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-content {
+        max-width: 95%;
+        padding: 15px;
+    }
+
+    #statsChart {
+        height: 200px;
+    }
 }
