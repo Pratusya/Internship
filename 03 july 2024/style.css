@@ -347,6 +347,7 @@ input:checked + .slider:before {
         grid-template-columns: 1fr;
     }
 
+    
     .stat-item {
         font-size: 1rem;
         padding: 0.75rem;
